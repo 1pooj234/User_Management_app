@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, NavLink } from "react-router-dom";
-import "./Rootlayout.css";
+import "./RootLayout.css";
 import Slider from "../ui/Slider";
 import Modal from "../ui/Modal";
 import { useState } from "react";

@@ -1,5 +1,4 @@
 const base_url = import.meta.env.VITE_API_URL;
-
 export const SignupUser = async (userObj, emp) => {
   const res = await fetch(
     `${base_url}/${emp ? "signup" : "register"}/${emp ? "employee" : "admin"}`,

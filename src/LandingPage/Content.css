@@ -26,14 +26,74 @@ td {
   text-align: center;
 }
 
+.emp_card_holder {
+  /* width: 80%; */
+  display: grid;
+  padding: 20px 0 0 0;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* align-content: center; */
+  /* justify-items: center; */
+}
+
+.emp_card {
+  overflow: hidden;
+  margin-bottom: 20px;
+  display: grid;
+  max-width: 410px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  grid-template-areas: "topl topr" "midu midu" "midl midl" "botl botr";
+  background-color: white;
+}
+
+.emp_card h1 {
+  grid-area: topl;
+}
+
+.user_emp_email {
+  grid-area: midu;
+}
+
+.task_status {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  grid-area: topr;
+  justify-self: end;
+}
+
+.emp_card p {
+  grid-area: midl;
+}
+
 .disp_btn {
+  justify-self: end;
   padding: 5px 15px;
+  width: 100px;
   border: none;
+  grid-area: botr;
   border-radius: 5px;
   color: white;
   font-weight: bold;
 }
-.grey {
+
+.assign_task {
+  cursor: pointer;
+  /* visibility: hidden; */
+  background-color: #e6f164;
+  border: none;
+  border-radius: 5px;
+  transform: translateX(-100%);
+  transition: all 0.5s ease;
+  /* opacity: 0; */
+}
+
+.emp_card:hover .assign_task {
+  transform: translateX(0%);
+}
+
+.emp_card .grey {
   background-color: #a9a9a9;
 }
 .green {
@@ -48,5 +108,18 @@ td {
 @media screen and (max-width: 800px) {
   .lg_sc {
     display: none;
+  }
+}
+
+@media screen and (min-width: 500px) {
+  .emp_card_holder {
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+  }
+}
+@media screen and (min-width: 740px) {
+  .emp_card_holder {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
   }
 }

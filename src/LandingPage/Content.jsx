@@ -56,16 +56,16 @@ const Content = () => {
       taskStatus: "red",
     },
   ];
-  const dispEmployees = employees.map((emp, i) => (
-    <tr key={i}>
-      <td>{emp.name}</td>
-      <td className="lg_sc">{emp.email}</td>
-      <td>{emp.role}</td>
-      <td>
-        <button className={`disp_btn ${emp.taskStatus}`}>View</button>
-      </td>
-    </tr>
-  ));
+  // const dispEmployees = employees.map((emp, i) => (
+  //   <tr key={i}>
+  //     <td>{emp.name}</td>
+  //     <td className="lg_sc">{emp.email}</td>
+  //     <td>{emp.role}</td>
+  //     <td>
+  //       <button className={`disp_btn ${emp.taskStatus}`}>View</button>
+  //     </td>
+  //   </tr>
+  // ));
   return (
     <div className="content_section">
       <h1>Streamlined User Management</h1>
@@ -74,7 +74,18 @@ const Content = () => {
         and permissions securely. Assign tasks in seconds, set deadlines, and
         monitor progress in real-time.
       </p>
-      <table>
+      <div className="emp_card_holder">
+        {employees.map((emp, i) => (
+          <div key={i} className="emp_card">
+            <h1 style={{ fontSize: "18px" }}>{emp.name}</h1>
+            <div className={`task_status ${emp.taskStatus}`}></div>
+            <div className="user_emp_email"></div>
+            <p>{emp.role}</p>
+            <button className={`disp_btn ${emp.taskStatus}`}>View Task</button>
+          </div>
+        ))}
+      </div>
+      {/* <table>
         <thead>
           <tr>
             <th>name</th>
@@ -84,7 +95,7 @@ const Content = () => {
           </tr>
         </thead>
         <tbody id="employee-table-body">{dispEmployees}</tbody>
-      </table>
+      </table> */}
     </div>
   );
 };

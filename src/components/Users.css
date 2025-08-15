@@ -1,6 +1,9 @@
-/* .users_section {
+.users_section {
   width: 100%;
-} */
+  display: grid;
+  /* justify-content: center; */
+  /* align-self: center; */
+}
 
 .search_inp {
   /* align-self: flex-start; */
@@ -58,7 +61,7 @@
   background-color: rgb(255, 255, 255);
 }
 
-.users_table {
+/* .users_table {
   width: 100%;
   background-color: rgb(255, 255, 255);
   border-collapse: collapse;
@@ -73,15 +76,15 @@
 
 .users_table td {
   font-size: 16px;
-}
+} */
 
-.task_btn {
+/* .task_btn {
   cursor: pointer;
   width: 100px;
   height: 30px;
   border: none;
   border-radius: 5px;
-}
+} */
 
 .not_completed {
   background-color: #ffb4b5;
@@ -121,5 +124,9 @@
 @media screen and (max-width: 700px) {
   .mb {
     display: none;
+  }
+}
+@media screen and (min-width: 700px) {
+  .users_section {
   }
 }

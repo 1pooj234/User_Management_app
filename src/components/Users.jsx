@@ -7,13 +7,14 @@ import { Link, useLocation } from "react-router-dom";
 import Loader from "../ui/Loader";
 import Modal from "../ui/Modal";
 import Popup from "../ui/Popup";
+import "../LandingPage/Content.css";
 const Users = () => {
   const [sendReq, httpObj] = Httphook(AllUsers);
   const [query, setQuery] = useState("");
   const curPage = useState(1)[0];
   const [p, setp] = useState(curPage);
   const location = useLocation();
-  const noOfUsersPerPage = 10;
+  const noOfUsersPerPage = 8;
   const getQuery = (e) => {
     setp(1);
     setQuery(e.target.value);
@@ -65,13 +66,16 @@ const Users = () => {
 
   if (httpObj.status === "loading") {
     finalContent = (
-      <tbody>
-        <tr>
-          <td style={{ border: 0, paddingTop: "185px" }} colSpan={10}>
-            <Loader />
-          </td>
-        </tr>
-      </tbody>
+      <div
+        style={{
+          width: "90vw",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Loader />;
+      </div>
     );
   }
   if (httpObj.status === "Completed" && httpObj.error !== null) {
@@ -86,8 +90,8 @@ const Users = () => {
       </Modal>
     );
   }
+  let dispEmployees = [];
   if (httpObj.status === "Completed" && httpObj.error === null) {
-    let dispEmployees = [];
     dispEmployees = httpObj.data
       .map((employee, i) => {
         return { ...employee, id: i + 1 };
@@ -101,66 +105,22 @@ const Users = () => {
       })
       .slice(firstUser, lastUser)
       .map((employee, i) => {
-        let status;
-        switch (employee.taskStatus) {
-          case "not_assigned":
-            status = (
-              <hr
-                style={{
-                  width: "12px",
-                  height: "3px",
-                  backgroundColor: "black",
-                }}
-              ></hr>
-            );
-            break;
-          case "completed":
-            status = "✅";
-            break;
-          case "not_completed":
-            status = "❌";
-            break;
-          default:
-            status = (
-              <hr
-                style={{
-                  width: "12px",
-                  height: "3px",
-                  backgroundColor: "black",
-                }}
-              ></hr>
-            );
-        }
         return (
-          <tr key={i}>
-            <td style={{ borderLeft: 0 }}>{employee.id}</td>
-            <td>{employee.name}</td>
-            <td className="mb">{employee.email}</td>
-            <td className="mb">{employee.role}</td>
-            <td>
-              <button className={`task_btn ${employee.taskStatus}`}>
-                view
-              </button>
-            </td>
-            <td style={{ borderRight: 0 }}>{status}</td>
-          </tr>
+          <div key={i} className="emp_card">
+            <h1 style={{ fontSize: "18px" }}>{employee.name}</h1>
+            <div className={`task_status grey`}></div>
+            <div className="user_emp_email" style={{ fontSize: "16px" }}>
+              <b>Email</b> : {employee.email}
+            </div>
+            <p style={{ fontSize: "16px" }}>
+              <b>Role</b> : {employee.role}
+            </p>
+            <button className={`disp_btn grey`}>View Task</button>
+            <button className="assign_task">Assign Task</button>
+          </div>
         );
       });
-    finalContent = (
-      <>
-        <tbody>
-          {dispEmployees.length === 0 ? (
-            <tr>
-              <td style={{ border: 0, paddingTop: "245px" }} colSpan={10}>
-                No users found
-              </td>
-            </tr>
-          ) : (
-            dispEmployees
-          )}
-        </tbody>
-      </>
-    );
+    finalContent = <>{dispEmployees}</>;
   }
   return (
     <>
@@ -181,20 +141,20 @@ const Users = () => {
             <option className="sort_option">Not completed</option>
           </select>
           <div className="users_section">
-            <div className="table_cover">
-              <table className="users_table">
-                <thead>
-                  <tr>
-                    <th style={{ borderLeft: 0 }}></th>
-                    <th>Name</th>
-                    <th className="mb">Email</th>
-                    <th className="mb">Role</th>
-                    <th>Task</th>
-                    <th style={{ borderRight: 0 }}>Status</th>
-                  </tr>
-                </thead>
-                {finalContent}
-              </table>
+            <div className="emp_card_holder">
+              {dispEmployees?.length === 0 && httpObj.status === "pending" ? (
+                <p
+                  style={{
+                    fontSize: "18px",
+                    color: "red",
+                    textAlign: "center",
+                  }}
+                >
+                  No users found
+                </p>
+              ) : (
+                finalContent
+              )}
             </div>
             <div className="pagination_element">
               <Pagination

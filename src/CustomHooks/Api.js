@@ -1,5 +1,5 @@
 const base_url = import.meta.env.VITE_API_URL;
-console.log(base_url);
+
 export const SignupUser = async (userObj, emp) => {
   const res = await fetch(
     `${base_url}/${emp ? "signup" : "register"}/${emp ? "employee" : "admin"}`,
@@ -8,20 +8,24 @@ export const SignupUser = async (userObj, emp) => {
       headers: {
         "Content-Type": "application/json",
       },
-      //
       body: JSON.stringify(userObj),
     }
   );
+
+  const data = await res.json();
+
   if (!res.ok) {
-    const error = new Error("Fill details");
+    const error = new Error(data.message || "Validation error");
     error.status = res.status;
+    error.errors = data.errors || null;
     throw error;
   }
-  const data = await res.json();
+
   return data;
 };
 
 export const LoginUser = async (userObj, emp) => {
+  console.log("Sending to backend:", JSON.stringify(userObj)); // ✅ debug
   const res = await fetch(`${base_url}/login/${emp ? "employee" : "admin"}`, {
     method: "POST",
     headers: {
@@ -29,12 +33,16 @@ export const LoginUser = async (userObj, emp) => {
     },
     body: JSON.stringify(userObj),
   });
+
+  const data = await res.json();
+
   if (!res.ok) {
-    const error = new Error("Fill details");
+    const error = new Error(data.message || "Validation error");
     error.status = res.status;
+    error.errors = data.errors || null;
     throw error;
   }
-  const data = await res.json();
+
   return data;
 };
 

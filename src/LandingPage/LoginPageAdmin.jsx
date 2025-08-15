@@ -1,108 +1,110 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./LoginPageAdmin.css";
-import Httphook from "../CustomHooks/Httphook";
+import Loader from "../ui/Loader";
+import Modal from "../ui/Modal";
 import { SignupUser, LoginUser } from "../CustomHooks/Api";
 import { useNavigate } from "react-router-dom";
-import Loader from "../ui/Loader";
 import {
+  isValidCompany,
   isValidEmail,
   isValidName,
   isValidPassword,
-  isValidCompany,
 } from "../CustomHooks/Validate";
-import Modal from "../ui/Modal";
-const LoginPageAdmin = () => {
-  const [valid, setValid] = useState({});
-  const [signup, setSignup] = useState(true);
-  const [sendReq, httpObj] = Httphook(signup ? SignupUser : LoginUser);
-  const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  useEffect(() => {
-    if (httpObj.status === "Completed" && httpObj.error === null) {
-      navigate("/users", { state: { token: httpObj.data?.token } });
-    }
-  }, [httpObj, navigate]);
 
-  let userData = {};
+const LoginPageAdmin = () => {
+  const navigate = useNavigate();
+
+  const [signup, setSignup] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [httpError, setHttpError] = useState(null);
+  const [valid, setValid] = useState({});
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
 
   const switchForm = () => {
     setSignup((prev) => !prev);
     setValid({});
+    setHttpError(null);
   };
+
   const signupHandler = async (e) => {
     e.preventDefault();
-    userData = {
-      name: userName,
-      email: userEmail,
-      password: userPassword,
-      companyName: companyName,
+    setHttpError(null);
+
+    const validName = isValidName(name);
+    const validEmail = isValidEmail(email);
+    const validPassword = isValidPassword(password);
+    const validCompany = isValidCompany(company);
+
+    if (validName || validEmail || validPassword || validCompany) {
+      setValid({
+        name: validName,
+        email: validEmail,
+        password: validPassword,
+        company: validCompany,
+      });
+      return;
+    }
+
+    const userData = {
+      name,
+      email,
+      password,
+      companyName: company,
       role: "admin",
       noOfEmployees: 100,
     };
-    const validName = isValidName(userName);
-    const validEmail = isValidEmail(userEmail);
-    const validPassword = isValidPassword(userPassword);
-    const validCompany = isValidCompany(companyName);
-    if (
-      validName !== "" ||
-      validPassword !== "" ||
-      validEmail !== "" ||
-      validCompany !== ""
-    ) {
-      setValid({
-        name: validName,
-        password: validPassword,
-        email: validEmail,
-        company: validCompany,
-      });
-    } else {
-      setValid({
-        name: "",
-        password: "",
-        email: "",
-        company: "",
-      });
-      await sendReq(userData);
+
+    try {
+      setLoading(true);
+      const data = await SignupUser(userData, false);
+      navigate("/users", { state: { token: data?.token } });
+    } catch (e) {
+      setHttpError({ status: e.status, message: e.message });
+    } finally {
+      setLoading(false);
     }
   };
+
   const loginHandler = async (e) => {
     e.preventDefault();
-    userData = {
-      email: userEmail,
-      password: userPassword,
+    setHttpError(null);
+
+    const validEmail = isValidEmail(email);
+    const validPassword = isValidPassword(password);
+
+    if (validEmail || validPassword) {
+      setValid({
+        email: validEmail,
+        password: validPassword,
+      });
+      return;
+    }
+
+    const userData = {
+      email,
+      password,
     };
 
-    const validEmail = isValidEmail(userEmail);
-    const validPassword = isValidPassword(userPassword);
-    if (validEmail !== "" || validPassword !== "") {
-      setValid({
-        password: validPassword,
-        email: validEmail,
-      });
-    } else {
-      setValid({
-        password: "",
-        email: "",
-      });
-      await sendReq(userData);
+    try {
+      setLoading(true);
+      const data = await LoginUser(userData, false);
+      navigate("/users", { state: { token: data?.token } });
+    } catch (e) {
+      setHttpError({ status: e.status, message: e.message });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (httpObj.status === "loading" && httpObj.data === null) {
+  if (loading) {
     return (
       <>
-        <Modal show={true}></Modal>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "60vh",
-          }}
-        >
+        <Modal show={true} />
+        <div className="centered">
           <Loader />
         </div>
       </>
@@ -125,72 +127,74 @@ const LoginPageAdmin = () => {
             <div className="input_holder">
               <input
                 type="text"
-                onChange={(e) => setUserName(e.target.value)}
-                value={userName}
+                onChange={(e) => setName(e.target.value)}
+                value={name}
                 placeholder="Enter name"
               />
               <div className="hover_line"></div>
             </div>
           </>
         )}
+
         <label className={signup ? "" : "email_label"}>
           Email
           <p className="inp_error">
-            {httpObj.error?.status === 404
-              ? "Incorrect combination"
-              : valid.email}
-          </p>
-        </label>
-
-        <div className={signup ? "input_holder" : "input_holder switch_form "}>
-          <input
-            type="email"
-            onChange={(e) => setUserEmail(e.target.value)}
-            value={userEmail}
-            placeholder="Enter email"
-          />
-          <div className="hover_line"></div>
-        </div>
-        <label className={signup ? "" : "password_label"}>
-          Password
-          <p className="inp_error">
-            {httpObj.error?.status === 404 ? "" : valid.password}
+            {httpError?.status === 404 ? "Incorrect combination" : valid.email}
           </p>
         </label>
         <div className={signup ? "input_holder" : "input_holder switch_form"}>
           <input
-            type="text"
-            onChange={(e) => setUserPassword(e.target.value)}
-            value={userPassword}
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            placeholder="Enter email"
+          />
+          <div className="hover_line"></div>
+        </div>
+
+        <label className={signup ? "" : "password_label"}>
+          Password
+          <p className="inp_error">
+            {httpError?.status === 404 ? "" : valid.password}
+          </p>
+        </label>
+        <div className={signup ? "input_holder" : "input_holder switch_form"}>
+          <input
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             placeholder="Enter password"
           />
           <div className="hover_line"></div>
         </div>
+
         {signup && (
           <>
             <label>
-              Company name
-              <p className="inp_error">{valid.company}</p>
+              Company name <p className="inp_error">{valid.company}</p>
             </label>
             <div className="input_holder">
               <input
                 type="text"
-                onChange={(e) => setCompanyName(e.target.value)}
-                value={companyName}
+                onChange={(e) => setCompany(e.target.value)}
+                value={company}
                 placeholder="Enter company name"
               />
               <div className="hover_line"></div>
             </div>
+
             <label>Number of Employees</label>
             <div className="input_holder">
-              <input type="number" readOnly value={100} />
+              <input type="text" readOnly value={100} />
             </div>
+
             <label>Role</label>
             <div className="input_holder">
-              <input type="text" readOnly value={"Admin"} />
+              <input type="text" readOnly value="Admin" />
             </div>
           </>
         )}
+
         <div className="login_btn_holder">
           <button disabled={!signup} className={signup ? "btn_active" : ""}>
             Sign up
@@ -200,6 +204,7 @@ const LoginPageAdmin = () => {
           </button>
         </div>
       </form>
+
       <p className="toggle_p" onClick={switchForm}>
         {signup ? "Click here to Login" : "Don't have account yet? click here"}
       </p>

@@ -76,13 +76,7 @@ const LoginPageEmployee = () => {
       const data = await SignupUser(userData, true);
       navigate("/users", { state: { token: data?.token, emp: true } });
     } catch (e) {
-      setHttpError({ status: e.status, message: e.message });
-      setValid({
-        name: validName,
-        password: validPassword,
-        email: validEmail,
-        company: e.errors,
-      });
+      setHttpError({ status: e.status, message: e.errors });
     } finally {
       setLoading(false);
     }
@@ -140,6 +134,16 @@ const LoginPageEmployee = () => {
   return (
     <div className="login_section">
       <h1>{signup ? "Sign up" : "Login"}</h1>
+      <p
+        style={{
+          color: "red",
+          fontWeight: "bold",
+          fontSize: "14px",
+          marginTop: "-10px",
+        }}
+      >
+        {httpError?.message}
+      </p>
       <form
         className="login_form"
         onSubmit={signup ? signupHandler : loginHandler}

@@ -30,7 +30,6 @@ const LoginPageEmployee = () => {
     setValid({});
     setHttpError(null);
   };
-
   const signupHandler = async (e) => {
     e.preventDefault();
     setHttpError(null);
@@ -78,6 +77,12 @@ const LoginPageEmployee = () => {
       navigate("/users", { state: { token: data?.token, emp: true } });
     } catch (e) {
       setHttpError({ status: e.status, message: e.message });
+      setValid({
+        name: validName,
+        password: validPassword,
+        email: validEmail,
+        company: e.errors,
+      });
     } finally {
       setLoading(false);
     }

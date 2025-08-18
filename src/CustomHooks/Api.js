@@ -16,7 +16,7 @@ export const SignupUser = async (userObj, emp) => {
   if (!res.ok) {
     const error = new Error(data.message || "Validation error");
     error.status = res.status;
-    error.errors = data.errors || null;
+    error.errors = data.error || null;
     throw error;
   }
 
